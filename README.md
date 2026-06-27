@@ -1,32 +1,36 @@
-# React + TypeScript + Vite
+# Mirai Nikki (Future Diary) 🔮
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> *"Write your future, and watch it compile into reality."*
 
-Currently, two official plugins are available:
+Mirai Nikki is a next-generation, AI-powered future diary and task manager. Instead of writing about what you did today, you write about what you *will* do tomorrow. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Powered by large language models (like Gemini and Claude via OpenRouter) and a robust background compilation engine, Mirai Nikki parses your free-form narrative and automatically compiles it into a structured execution plan (tasks). 
 
-## React Compiler
+## Features ✨
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Future Journaling:** A distraction-free, beautifully themed editor (Warm Paper, Dark Ink) to write your intentions.
+- **AI Task Compiler:** An offline-first, background task queue that intelligently extracts action items from your narrative.
+- **Interactive Execution Plan:** Your compiled tasks map directly back to the sentences in your journal. Hover over a task to highlight the exact sentence that birthed it.
+- **Immediate Task View:** Check your "Tomorrow's Tasks" today, or "Today's Tasks" when the day arrives. Add custom tasks on the fly.
+- **Bring Your Own AI:** Plug in any OpenRouter API key and choose your preferred model to handle compilation.
+- **Privacy First:** All journals and tasks are stored locally in your browser using IndexedDB.
+- **PWA Ready:** Install Mirai Nikki to your home screen for a native app experience.
 
-## Expanding the Oxlint configuration
+## Getting Started 🚀
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
+4. Open your browser and go to `Settings` to input your OpenRouter API key.
+5. Start writing your future!
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## Technology Stack 🛠️
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+- **Frontend:** React, TypeScript, Vite
+- **Styling:** Tailwind CSS, custom CSS variables for dynamic theming
+- **State Management:** Zustand
+- **Database:** Dexie.js (IndexedDB)
+- **Icons:** Lucide React
+
+## License 📄
+MIT License
