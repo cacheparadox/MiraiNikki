@@ -1,0 +1,1511 @@
+# MIRAI NIKKI
+
+## Product Requirements Document (PRD)
+
+### Version 1.0
+
+---
+
+# 1. Overview
+
+Mirai Nikki is a privacy-first, AI-assisted, mobile-first Progressive Web Application that helps users commit to tomorrow by writing tomorrow's achievements as though they have already happened.
+
+Unlike traditional productivity applications that ask users to plan tomorrow using lists and reminders, Mirai Nikki asks users to narrate tomorrow in the past tense.
+
+Example:
+
+> "Today I woke up at 6 AM, completed the authentication module, called my parents, watered the plants and finished reading my book."
+
+The application then uses an LLM to transform this narrative into a structured execution plan.
+
+The original writing is sealed immediately after submission and cannot be viewed until the following morning.
+
+When the user opens the application the next day, they first read their "future memory", followed by a checklist generated from that memory.
+
+The application's primary purpose is **commitment**, not productivity.
+
+Artificial Intelligence is intentionally invisible. Users should never feel like they are interacting with an AI assistant. AI exists solely to convert natural language into structured actions.
+
+---
+
+# 2. Product Goals
+
+The product should:
+
+* Encourage intentional planning through narrative writing.
+* Reduce morning decision fatigue.
+* Make AI invisible to the user.
+* Feel like a daily ritual rather than a productivity tool.
+* Operate entirely without proprietary backend infrastructure.
+* Keep all user data on-device.
+* Function as an installable Progressive Web Application.
+
+The product should NOT attempt to become:
+
+* A second brain
+* A note-taking application
+* A project management tool
+* A calendar
+* A habit tracker
+* A chatbot
+* A therapist
+* A social platform
+
+Every feature request should answer one question:
+
+> Does this strengthen the nightly commitment ritual?
+
+If the answer is no, it should not be implemented.
+
+---
+
+# 3. Technical Philosophy
+
+Architecture priorities:
+
+1. Local First
+2. Privacy First
+3. Offline First
+4. Mobile First
+5. AI Second
+
+There must be:
+
+* No backend
+* No authentication
+* No cloud database
+* No analytics
+* No telemetry
+* No advertisements
+
+Everything should execute inside the browser.
+
+Only one outbound request exists:
+
+Journal
+↓
+
+Selected AI Provider
+↓
+
+Structured Tasks
+↓
+
+Stored locally
+
+---
+
+# 4. Tech Stack
+
+Frontend
+
+* React 19
+* TypeScript
+* Vite
+
+Styling
+
+* TailwindCSS
+* CSS Variables
+* Framer Motion should NOT be used.
+* Use CSS animations wherever possible.
+
+State Management
+
+* Zustand
+
+Local Database
+
+* IndexedDB
+* Dexie.js
+
+Routing
+
+* React Router
+
+Forms
+
+* React Hook Form
+
+Icons
+
+* Lucide React
+
+Notifications
+
+* Browser Notification API
+
+PWA
+
+* vite-plugin-pwa
+
+AI
+
+* OpenRouter
+* Future provider abstraction
+
+Deployment
+
+* Static hosting
+* Cloudflare Pages
+* Netlify
+* GitHub Pages
+* Vercel Static
+
+No server runtime required.
+
+---
+
+# 5. Primary User Flow
+
+Every day follows the exact same lifecycle.
+
+Night
+
+↓
+
+Write Tomorrow
+
+↓
+
+Seal Tomorrow
+
+↓
+
+Future Compiler
+
+↓
+
+Sleep
+
+↓
+
+Morning
+
+↓
+
+Open Tomorrow
+
+↓
+
+Read Future Memory
+
+↓
+
+Execute Tasks
+
+↓
+
+Archive
+
+↓
+
+Repeat
+
+There should never be alternative workflows.
+
+Consistency is part of the ritual.
+
+---
+
+# 6. First Launch Experience
+
+On first launch, display a four-step onboarding.
+
+Screen 1
+
+Title
+
+Welcome to Mirai Nikki
+
+Description
+
+"Every night you'll write tomorrow as though it has already happened."
+
+Illustration
+
+Minimal hardcover journal.
+
+Primary CTA
+
+Continue
+
+---
+
+Screen 2
+
+Title
+
+Why It Works
+
+Description
+
+"The version of you tonight plans. The version of you tomorrow executes."
+
+Illustration
+
+Timeline showing Night → Morning.
+
+---
+
+Screen 3
+
+Title
+
+Privacy
+
+Description
+
+"Your diary belongs to you. Everything stays on your device except a temporary request to your chosen AI provider."
+
+Illustration
+
+Shield with local device.
+
+---
+
+Screen 4
+
+Title
+
+AI Setup
+
+Fields
+
+Provider
+
+(API dropdown)
+
+API Key
+
+Model
+
+Advanced Settings (collapsed)
+
+Skip button
+
+Continue button
+
+If skipped:
+
+AI features remain disabled until configured.
+
+---
+
+# 7. Information Architecture
+
+Bottom Navigation
+
+Tomorrow
+
+Write
+
+Archive
+
+Settings
+
+No additional pages should exist.
+
+Everything must be accessible from these four destinations.
+
+---
+
+# 8. Tomorrow Screen
+
+Purpose
+
+Morning experience.
+
+Layout
+
+Greeting
+
+↓
+
+Large diary card
+
+↓
+
+Today's Journey
+
+↓
+
+Optional pending status
+
+Greeting examples
+
+Good Morning.
+
+Your future has arrived.
+
+The diary card should occupy approximately 60% of the first viewport.
+
+The checklist begins below the fold on smaller devices to encourage reading first.
+
+Buttons
+
+Primary
+
+Open Tomorrow
+
+Secondary
+
+None
+
+Do not display statistics.
+
+Do not display streaks.
+
+Do not display motivational quotes.
+
+Do not display weather.
+
+Do not display productivity graphs.
+
+The application should remain visually quiet.
+
+---
+
+# 9. Write Screen
+
+This is the primary screen of the application.
+
+Layout
+
+Header
+
+Current date
+
+↓
+
+Editor
+
+↓
+
+Word counter
+
+↓
+
+Seal Tomorrow button
+
+The editor should occupy approximately 80% of available height.
+
+Editor requirements
+
+* Plain text only
+* Multi-line textarea
+* Auto-growing height
+* Autosave every 500ms (debounced)
+* Spellcheck disabled
+* Rich text disabled
+* Markdown disabled
+* AI autocomplete disabled
+* Paste formatting stripped
+
+Placeholder
+
+"Write tomorrow as if it has already happened."
+
+Initial template
+
+From your future self,
+
+Today...
+
+Users may edit or remove this template.
+
+Nothing is enforced.
+
+Autosave should recover after
+
+* Refresh
+* Browser restart
+* Crash
+* PWA restart
+
+Draft recovery should happen automatically.
+
+---
+
+# 10. Seal Tomorrow
+
+Primary CTA
+
+Seal Tomorrow
+
+Never use
+
+Save
+
+Submit
+
+Generate
+
+Complete
+
+Flow
+
+User taps button
+
+↓
+
+Confirmation Modal
+
+Title
+
+Seal Tomorrow?
+
+Body
+
+Once sealed, tomorrow cannot be edited until it arrives.
+
+Buttons
+
+Cancel
+
+Seal Tomorrow
+
+Selecting Seal Tomorrow immediately locks editing.
+
+Only after locking should AI compilation begin.
+
+Users should never wait for AI before the ritual completes.
+
+If AI fails
+
+Journal remains sealed.
+
+Compilation can retry later.
+
+Never block sealing because of AI.
+
+---
+
+# 11. Morning Experience
+
+Default unlock time
+
+4:00 AM local time
+
+Configurable.
+
+Before unlock
+
+Diary remains sealed.
+
+Display
+
+Your future hasn't arrived yet.
+
+Next unlock
+
+04:00 AM
+
+Countdown
+
+After unlock
+
+Tomorrow screen changes.
+
+Greeting
+
+Good Morning.
+
+Your future has arrived.
+
+User must explicitly press
+
+Open Tomorrow
+
+The diary never opens automatically.
+
+This intentional interaction reinforces the ritual.
+
+Opening animation specifications will be defined later.
+
+Once opened
+
+Display
+
+Future Memory
+
+↓
+
+Today's Journey
+
+The journal always appears before the task list.
+
+The story comes before execution.
+
+---
+
+# 12. Task Execution
+
+Tasks are extracted by the Future Compiler.
+
+Each task contains
+
+* Title
+* Completion state
+* Optional category
+* Optional estimated time
+
+Completing a task
+
+* Marks checkbox complete
+* Leaves task visible
+* Slightly reduces opacity
+* Adds strike-through
+* Triggers corresponding sentence highlight if mapping exists
+
+Completed tasks are never removed.
+
+History should remain honest.
+
+Tasks cannot be reordered manually.
+
+The AI decides the initial ordering based on dependency and chronology.
+# 13. Archive
+
+The Archive represents completed days, not completed tasks. It should feel like browsing chapters of a book rather than browsing historical data.
+
+Entries are grouped by month and sorted newest first. Each entry is displayed as a hardcover journal card containing the date, day of week, and one status badge.
+
+Status values are intentionally limited to:
+
+* Fulfilled
+* Left Unfinished
+
+Do not display percentages, streaks, productivity scores, completion rates or achievement badges. The archive is intended to preserve history, not judge it.
+
+Opening an archived entry displays:
+
+* Original future memory
+* Timestamp written
+* Unlock timestamp
+* Compiled execution plan
+* Completion state of every task
+* Notes indicating if AI compilation failed or required retry
+
+Archived entries are read-only.
+
+Editing is never permitted after sealing.
+
+Deletion must only be possible from Settings and always require explicit confirmation.
+
+---
+
+# 14. Settings
+
+Settings should remain intentionally small.
+
+## General
+
+* Theme (Light / Dark / System)
+* Unlock Time
+* Daily Reminder Time
+* Morning Reminder Time
+* Enable Notifications
+* Export Data
+* Import Data
+
+## AI
+
+* Provider
+* API Key
+* Model Name
+* Base URL (Advanced)
+* System Prompt Override (Advanced)
+* Test Connection
+
+## About
+
+* Version
+* Changelog
+* Privacy Policy
+* Open Source Licenses
+
+Never require account creation.
+
+Never request personal information.
+
+---
+
+# 15. AI Provider Abstraction
+
+The application should not be tightly coupled to OpenRouter.
+
+Define a generic provider interface.
+
+Every provider should implement:
+
+* validateConnection()
+* compileJournal()
+* listModels() (optional)
+* supportsJSONMode()
+* supportsStreaming()
+
+Initial implementation targets OpenRouter.
+
+Future providers:
+
+* Gemini API
+* Ollama
+* LM Studio
+* OpenAI-compatible APIs
+* Anthropic-compatible APIs
+
+Switching providers should require only configuration changes.
+
+---
+
+# 16. Future Compiler
+
+The AI module is internally called the Future Compiler.
+
+Never refer to it as "Chat", "Assistant" or "Parser".
+
+Responsibilities:
+
+* Convert narrative into structured tasks.
+* Infer obvious prerequisite tasks only when confidence is high.
+* Preserve chronological order where possible.
+* Return strict JSON.
+* Never rewrite the journal.
+* Never summarize the journal.
+* Never provide advice.
+* Never motivate.
+* Never comment on the user's writing.
+
+Example:
+
+Input:
+
+"Today I finally submitted my college application."
+
+Output:
+
+* Finish application
+* Upload documents
+* Submit application
+
+If confidence is low, prefer fewer tasks rather than inventing work.
+
+---
+
+# 17. Future Compiler Prompt
+
+The default system prompt should instruct the model to behave as a deterministic compiler.
+
+Requirements:
+
+* Extract only actionable tasks.
+* Ignore emotional language.
+* Ignore compliments, opinions and storytelling.
+* Do not rewrite user text.
+* Return JSON only.
+* Never return markdown.
+* Never include explanations.
+* Preserve ordering when possible.
+* Merge duplicate tasks.
+* Infer dependencies conservatively.
+
+Application-side JSON validation is mandatory.
+
+If validation fails:
+
+1. Retry once.
+2. Attempt lightweight repair.
+3. If still invalid, preserve the journal and mark compilation as failed.
+
+---
+
+# 18. Data Model
+
+JournalEntry
+
+* id
+* createdAt
+* unlockAt
+* status
+* content
+* compilerStatus
+* taskIds
+* version
+
+Task
+
+* id
+* journalId
+* title
+* completed
+* completedAt
+* category
+* estimatedDuration
+* confidence
+* sourceSentence
+
+Settings
+
+* theme
+* unlockTime
+* notificationSettings
+* aiProvider
+* aiModel
+* baseUrl
+* systemPromptOverride
+
+Draft
+
+* currentContent
+* updatedAt
+
+Metadata
+
+* appVersion
+* onboardingCompleted
+* lastBackup
+
+Indexes should exist for:
+
+* createdAt
+* unlockAt
+* journalId
+* compilerStatus
+
+---
+
+# 19. Local Storage
+
+Use IndexedDB via Dexie.
+
+Storage responsibilities:
+
+Journal Table
+Stores every sealed and archived entry.
+
+Task Table
+Stores compiled execution plans.
+
+Draft Table
+Stores active writing session.
+
+Settings Table
+Stores application configuration.
+
+Queue Table
+Stores pending AI compilation requests.
+
+Metadata Table
+Stores application state.
+
+Never store API keys inside exported backups unless the user explicitly opts in.
+
+---
+
+# 20. Offline Behaviour
+
+The application must remain fully usable without internet.
+
+Available offline:
+
+* Read archive
+* Write tomorrow
+* Edit draft
+* Change settings
+* Complete tasks
+* Export data
+* Import data
+
+Unavailable offline:
+
+* AI compilation
+* AI connection test
+* Provider model listing
+
+If a journal is sealed while offline:
+
+* Seal immediately.
+* Save locally.
+* Add to compilation queue.
+* Retry automatically when connectivity returns.
+
+If compilation has not completed by unlock time:
+
+Display the journal normally.
+
+Replace the task list with:
+
+"Your execution plan is still being prepared."
+
+Provide a Retry button.
+
+The journal is never blocked by AI.
+
+---
+
+# 21. Design System
+
+Grid: 8-point spacing system.
+
+Spacing tokens:
+
+4
+8
+12
+16
+24
+32
+48
+64
+
+Border Radius:
+
+8
+12
+16
+24
+
+Typography:
+
+UI: Inter
+
+Journal: Cormorant Garamond
+
+Colors:
+
+Primary Background: #0F1117
+
+Secondary Background: #181C25
+
+Paper Surface: #F6F1E8
+
+Primary Accent: #D6B15E
+
+Secondary Accent: #6D8CFF
+
+Success: #6BCB77
+
+Danger: #D9534F
+
+Muted Text: #9AA3B2
+
+Divider: rgba(255,255,255,0.08)
+
+Icons:
+
+Lucide React
+
+Illustrations should use simple line-art and avoid skeuomorphic fantasy aesthetics.
+
+The application should resemble premium stationery rather than medieval magic.
+
+---
+
+# 22. Motion Design
+
+Animations should communicate state changes, not entertain.
+
+Opening Diary
+
+* Duration: 600ms
+* Easing: ease-in-out
+* Cover rotates slightly.
+* First page fades in.
+* Tasks appear 250ms after journal.
+
+Seal Animation
+
+* Duration: 700ms
+* Button morph.
+* Diary closes.
+* Wax seal animation.
+* Optional haptic feedback on supported devices.
+
+Task Completion
+
+* Duration: 180ms
+* Checkbox fills.
+* Task opacity reduces.
+* Strike-through appears.
+* Matching sentence receives subtle highlight.
+
+Modal
+
+* Fade + translateY.
+
+Reduced motion preference must disable decorative animations.
+
+Never use spring animations.
+
+Never use exaggerated bounce effects.
+
+---
+
+# 23. Notification Strategy
+
+Notifications are optional.
+
+Default:
+
+Disabled.
+
+Available reminders:
+
+Evening:
+
+"Ready to write tomorrow?"
+
+Morning:
+
+"Your future has arrived."
+
+No engagement reminders.
+
+No streak reminders.
+
+No promotional notifications.
+
+Never notify more than twice per day.
+
+---
+
+# 24. Error Handling
+
+AI Failure
+
+* Preserve journal.
+* Mark compilation pending.
+* Allow retry.
+
+Invalid API Key
+
+* Explain clearly.
+* Never expose raw HTTP errors.
+
+Malformed AI Response
+
+* Retry once.
+* Attempt repair.
+* Preserve journal.
+
+IndexedDB Failure
+
+* Display recovery instructions.
+* Offer export if possible.
+
+Import Failure
+
+* Validate schema before overwrite.
+* Reject invalid backups.
+
+Application updates must preserve all stored data.
+
+---
+
+# 25. Accessibility
+
+WCAG AA compliant.
+
+Support:
+
+* Keyboard navigation
+* Screen readers
+* High contrast mode
+* Reduced motion
+* Zoom up to 200%
+
+Touch targets:
+
+Minimum 44px.
+
+Color should never be the sole indicator of task completion.
+
+Text alternatives must exist for every icon.
+
+# 26. PWA Requirements
+
+Mirai Nikki should feel indistinguishable from a native application once installed.
+
+The application must support installation on Android, iOS (where supported), Windows and macOS through the browser's Progressive Web App capabilities.
+
+Requirements:
+
+* Install prompt
+* Standalone display mode
+* Custom splash screen
+* App shortcuts
+* Offline asset caching
+* Versioned cache management
+* Background update detection
+* Automatic cache invalidation on new releases
+
+The service worker should cache all application assets, fonts, icons and static resources. User data should never be cached separately from IndexedDB.
+
+Application updates should display a non-intrusive banner:
+
+"A new version is available."
+
+Buttons:
+
+* Update Now
+* Later
+
+Updating the application must never delete user data.
+
+---
+
+# 27. Responsive Design
+
+Primary design target:
+
+390px × 844px (modern mobile)
+
+Secondary targets:
+
+* Tablets
+* Desktop
+* Ultrawide
+
+Mobile
+
+Single-column layout.
+
+Bottom navigation always visible.
+
+Desktop
+
+Centered reading layout.
+
+Maximum content width: 900px.
+
+Navigation remains bottom-aligned to preserve muscle memory.
+
+Avoid creating a completely different desktop interface.
+
+Mirai Nikki should feel like the same application regardless of screen size.
+
+---
+
+# 28. Component Specifications
+
+## Journal Editor
+
+Supports:
+
+* Plain text
+* Multi-line editing
+* Undo / Redo
+* Copy / Paste
+
+Does not support:
+
+* Images
+* Attachments
+* Markdown
+* Rich text
+* Emojis inserted through toolbar (system keyboard emojis are acceptable)
+
+---
+
+## Task Card
+
+Contains:
+
+* Checkbox
+* Task title
+* Optional category badge
+* Optional estimated duration
+
+Interactions:
+
+* Tap checkbox
+* Tap task for details (future extensibility)
+* Long press reserved for future features (do not implement in v1)
+
+---
+
+## Diary Card
+
+States:
+
+* Draft
+* Sealed
+* Ready
+* Opened
+* Archived
+
+Each state has its own illustration and animation but shares identical dimensions to avoid layout shifts.
+
+---
+
+## Confirmation Modal
+
+Reusable component.
+
+Used for:
+
+* Seal Tomorrow
+* Delete Archive
+* Import Backup
+* Clear Data
+
+Primary action always on the right.
+
+Escape key closes.
+
+Clicking outside closes unless destructive.
+
+---
+
+# 29. Empty States
+
+Tomorrow
+
+"You haven't written tomorrow yet."
+
+Primary CTA:
+
+Write Tomorrow
+
+---
+
+Archive
+
+"No memories yet."
+
+Primary CTA:
+
+Write your first tomorrow.
+
+---
+
+Offline Queue
+
+"Waiting for connection to compile your future."
+
+---
+
+No AI Configured
+
+"Connect an AI provider to automatically create tomorrow's execution plan."
+
+Primary CTA:
+
+Configure AI
+
+---
+
+No Search Results
+
+"No matching memories found."
+
+---
+
+# 30. Edge Cases
+
+User closes browser while writing.
+
+Expected behavior:
+
+Draft restored automatically.
+
+---
+
+User refreshes page during AI compilation.
+
+Expected behavior:
+
+Compilation resumes or retries.
+
+Journal never duplicated.
+
+---
+
+User changes unlock time after sealing.
+
+Expected behavior:
+
+Previously sealed entries retain their original unlock time.
+
+Only future entries use the new setting.
+
+---
+
+User changes AI provider.
+
+Expected behavior:
+
+Future entries use new provider.
+
+Historical entries remain unchanged.
+
+---
+
+User imports backup over existing data.
+
+Prompt:
+
+Replace existing data?
+
+Merge with existing data?
+
+Cancel
+
+---
+
+System clock changes.
+
+Use the device's current local time.
+
+No attempt should be made to prevent deliberate manipulation.
+
+Mirai Nikki relies on the user's commitment rather than enforcing behavior through technical restrictions.
+
+---
+
+# 31. Security
+
+No proprietary backend exists.
+
+No personal information collected.
+
+API keys stored locally using browser storage.
+
+API keys excluded from exports by default.
+
+Validate imported JSON before writing to IndexedDB.
+
+Sanitize all rendered journal content.
+
+Prevent HTML injection.
+
+Use Content Security Policy where possible.
+
+Never execute user-generated content.
+
+---
+
+# 32. Performance Targets
+
+Initial load:
+
+<2 seconds on mid-range mobile.
+
+Navigation:
+
+Instant.
+
+Journal save latency:
+
+<100ms perceived.
+
+Autosave debounce:
+
+500ms.
+
+Task completion animation:
+
+<200ms.
+
+Bundle size target:
+
+As small as practical.
+
+Avoid unnecessary runtime dependencies.
+
+Prefer browser-native APIs whenever possible.
+
+---
+
+# 33. Testing Requirements
+
+Unit Tests
+
+* Future Compiler response validation
+* Storage utilities
+* Queue management
+* Date calculations
+* Unlock logic
+
+Integration Tests
+
+* Seal workflow
+* Morning unlock
+* Archive creation
+* Import / Export
+* AI retry logic
+
+Manual Testing
+
+* Android
+* iOS Safari
+* Chrome
+* Edge
+* Firefox
+
+Test:
+
+Offline mode
+
+PWA installation
+
+Dark mode
+
+Reduced motion
+
+Accessibility
+
+Browser refresh recovery
+
+---
+
+# 34. Acceptance Criteria
+
+The project is considered complete when the following conditions are met.
+
+Writing
+
+✓ Users can write tomorrow's narrative.
+
+✓ Draft autosaves automatically.
+
+✓ Draft survives refresh.
+
+✓ Plain text only.
+
+✓ Mobile keyboard behaves correctly.
+
+---
+
+Sealing
+
+✓ Confirmation modal shown.
+
+✓ Journal becomes immutable.
+
+✓ AI compilation starts after sealing.
+
+✓ AI failure never blocks sealing.
+
+---
+
+Morning
+
+✓ Journal unlocks after configured time.
+
+✓ User manually opens diary.
+
+✓ Journal displayed before checklist.
+
+✓ Tasks load correctly.
+
+---
+
+Execution
+
+✓ Tasks can be completed.
+
+✓ Completed tasks remain visible.
+
+✓ State persists after refresh.
+
+---
+
+Archive
+
+✓ Completed days archived automatically.
+
+✓ Entries grouped by month.
+
+✓ Read-only after sealing.
+
+---
+
+Privacy
+
+✓ No backend.
+
+✓ No analytics.
+
+✓ No account.
+
+✓ Local storage only.
+
+---
+
+PWA
+
+✓ Installable.
+
+✓ Offline capable.
+
+✓ Update handling implemented.
+
+✓ Icons and splash screen configured.
+
+---
+
+Accessibility
+
+✓ WCAG AA.
+
+✓ Keyboard navigation.
+
+✓ Reduced motion support.
+
+✓ Screen reader labels.
+
+---
+
+# 35. Future Roadmap
+
+The following features are intentionally excluded from Version 1 but should be supported by the architecture.
+
+* Voice journal input
+* Local LLM support (Ollama / LM Studio)
+* Calendar export
+* Optional prerequisite task review before sealing
+* Multiple journal themes
+* Paper textures
+* Handwritten typography mode
+* Encrypted local vault
+* Recurring task recognition
+* Cross-device sync through user-managed storage
+* Optional Apple Calendar / Google Calendar export
+
+No feature should compromise the local-first philosophy or require mandatory cloud accounts.
+
+---
+
+# 36. Guiding Principles for Implementation
+
+When making implementation decisions, prioritize simplicity over feature count.
+
+Do not add features because other productivity applications have them.
+
+The interface should remain quiet, uncluttered and predictable.
+
+Animations should communicate state changes rather than entertain.
+
+Artificial Intelligence should remain invisible. Users should never feel like they are using an AI application. They should feel like they are writing in a diary that quietly prepares tomorrow for them.
+
+The writing experience is the most important part of the application. The AI, checklist and archive exist to support that experience, not replace it.
+
+If two design options are equally functional, choose the one with fewer controls, less visual noise and lower cognitive load.
+
+Every screen should reinforce the product's central idea: the person writing tonight is making a promise to the person waking up tomorrow.
+
+---
+
+# 37. Final Product Statement
+
+Mirai Nikki is a local-first, privacy-first Progressive Web Application that transforms tomorrow's imagined memories into today's executable commitments.
+
+Users write tomorrow as though it has already happened. The application silently compiles that narrative into a structured execution plan, seals it until morning, and then reveals it as a letter from yesterday's self.
+
+The application is intentionally minimal, avoids unnecessary productivity mechanics, requires no backend infrastructure, and uses AI only where it provides clear functional value.
+
+The goal is not to help users plan more.
+
+The goal is to help them keep the promises they already made to themselves.

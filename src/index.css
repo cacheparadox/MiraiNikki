@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-paper: var(--paper);
+  --color-gold: var(--gold);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-muted: var(--muted);
+  --color-divider: var(--divider);
+  --color-text-primary: var(--text);
+
+  --font-ui: "Inter", sans-serif;
+  --font-journal: "Cormorant Garamond", serif;
+}
+
+@layer base {
+  :root {
+    --bg: #0F1117;
+    --surface: #181C25;
+    --paper: #F6F1E8; /* Stays warm even in dark mode */
+    --gold: #D6B15E;
+    --accent: #6D8CFF;
+    --success: #6BCB77;
+    --danger: #D9534F;
+    --muted: #9AA3B2;
+    --divider: rgba(255, 255, 255, 0.08);
+    --text: #F8F9FA;
+  }
+
+  .theme-light {
+    --bg: #F8F9FA;
+    --surface: #FFFFFF;
+    --paper: #F6F1E8;
+    --gold: #C59D45;
+    --accent: #4A6FFF;
+    --success: #49B056;
+    --danger: #C9302C;
+    --muted: #6B7280;
+    --divider: rgba(0, 0, 0, 0.08);
+    --text: #111827;
+  }
+
+  /* We might want system preference matching as default or controllable via JS */
+  @media (prefers-color-scheme: light) {
+    :root:not(.theme-dark) {
+      --bg: #F8F9FA;
+      --surface: #FFFFFF;
+      --paper: #F6F1E8;
+      --gold: #C59D45;
+      --accent: #4A6FFF;
+      --success: #49B056;
+      --danger: #C9302C;
+      --muted: #6B7280;
+      --divider: rgba(0, 0, 0, 0.08);
+      --text: #111827;
+    }
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
