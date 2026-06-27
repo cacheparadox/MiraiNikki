@@ -59,7 +59,10 @@ export const useJournalStore = create<JournalState>((set, get) => ({
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) return;
 
-    const updatedTask = { ...tasks[taskIndex], completed: true, completedAt: new Date().toISOString() };
+    const task = tasks[taskIndex];
+    if (!task) return;
+
+    const updatedTask = { ...task, completed: true, completedAt: new Date().toISOString() };
     await db.tasks.put(updatedTask);
 
     const newTasks = [...tasks];

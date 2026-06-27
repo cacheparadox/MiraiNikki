@@ -9,7 +9,7 @@ export class CompilerTelemetry {
       level,
       component,
       message,
-      details
+      ...(details !== undefined ? { details } : {})
     };
     await db.logs.put(entry);
     

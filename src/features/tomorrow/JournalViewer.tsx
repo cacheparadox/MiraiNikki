@@ -1,13 +1,10 @@
-import React, { useMemo } from 'react';
-import { segmentText } from '../../utils/segmenter';
-import clsx from 'clsx';
-
+import React from 'react';
 interface JournalViewerProps {
   content: string;
   highlightedSentenceId: string | null;
 }
 
-export const JournalViewer: React.FC<JournalViewerProps> = ({ content, highlightedSentenceId }) => {
+export const JournalViewer: React.FC<JournalViewerProps> = ({ content }) => {
   // We use segmentText purely to reconstruct the sentences so we can render them individually
   // Since segmentText assigns random UUIDs every time it runs, the UUIDs won't match the compiler ones unless we stored them!
   // BUT Wait: The task stores the UUID assigned by Normalizer during compilation.

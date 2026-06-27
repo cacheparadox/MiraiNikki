@@ -6,7 +6,7 @@ import { useUIStore } from '../../stores/ui.store';
 
 export async function sealJournal() {
   const { draftContent, clearDraft } = useDraftStore.getState();
-  const { sealJournal: saveJournalToDb, todayJournal } = useJournalStore.getState();
+  const { sealJournal: saveJournalToDb } = useJournalStore.getState();
   const { settings } = useSettingsStore.getState();
   const { setScreen } = useUIStore.getState();
 

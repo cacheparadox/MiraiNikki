@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { type JournalEntry, type Task, JournalStatus } from '../types';
+import { type JournalEntry, JournalStatus } from '../types';
 import { db } from '../db/database';
 
 interface ArchiveState {
