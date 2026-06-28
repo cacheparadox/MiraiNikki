@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSettingsStore } from '../../stores/settings.store';
-import { BookOpen, Shield, Sparkles, ArrowRight, Check } from 'lucide-react';
+import { BookOpen, Shield, Sparkles, ArrowRight, Check, Moon, Sun } from 'lucide-react';
 import clsx from 'clsx';
 import { OpenRouterProvider } from '../../providers/OpenRouterProvider';
 
@@ -8,11 +8,17 @@ export const OnboardingScreen: React.FC = () => {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [apiKey, setApiKey] = useState('');
-  const model = 'google/gemini-2.5-flash-preview-05-20';
+  const [model, setModel] = useState('google/gemini-2.5-flash-pro');
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message?: string } | null>(null);
 
-  const { updateSettings } = useSettingsStore();
+  const { settings, updateSettings } = useSettingsStore();
+
+  const toggleTheme = () => {
+    const currentTheme = settings?.theme === 'Dark' ? 'Dark' : (settings?.theme === 'Light' ? 'Light' : 'System');
+    const newTheme = currentTheme === 'Dark' ? 'Light' : 'Dark';
+    updateSettings({ theme: newTheme });
+  };
 
   const handleNext = () => {
     if (step < 3) {
@@ -66,6 +72,13 @@ export const OnboardingScreen: React.FC = () => {
           />
         ))}
       </div>
+
+      <button 
+        onClick={toggleTheme}
+        className="absolute top-8 right-8 p-2 rounded-full bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+      >
+        {settings?.theme === 'Light' ? <Moon size={20} /> : <Sun size={20} />}
+      </button>
 
       <div className={clsx("max-w-md w-full flex flex-col items-center", getAnimationClass())} key={step}>
         
@@ -124,6 +137,17 @@ export const OnboardingScreen: React.FC = () => {
                     onChange={(e) => setApiKey(e.target.value)}
                     className="w-full bg-[var(--color-bg)] border border-[var(--color-divider)] rounded-lg px-4 py-2 outline-none focus:border-[var(--color-gold)]"
                     placeholder="sk-or-v1-..."
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-[var(--color-muted)]">Model ID</label>
+                  <input 
+                    type="text" 
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    className="w-full bg-[var(--color-bg)] border border-[var(--color-divider)] rounded-lg px-4 py-2 outline-none focus:border-[var(--color-gold)]"
+                    placeholder="google/gemini-2.5-flash-pro"
                   />
                 </div>
                 
