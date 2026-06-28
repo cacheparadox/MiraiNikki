@@ -14,7 +14,7 @@ export const BottomNav: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-[var(--color-surface)] border-t border-[var(--color-divider)] flex justify-around items-center px-2 z-50">
+    <nav className="shrink-0 w-full h-16 bg-[var(--color-surface)] border-t border-[var(--color-divider)] flex justify-around items-center px-2 z-50">
       {navItems.map((item) => {
         const isActive = currentScreen === item.id;
         return (
