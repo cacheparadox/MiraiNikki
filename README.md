@@ -1,36 +1,70 @@
-# Mirai Nikki (Future Diary) 🔮
+# Mirai Nikki (未来日記) 🔮
 
-> *"Write your future, and watch it compile into reality."*
+> *"Every night you'll write tomorrow as though it has already happened. The version of you tonight plans. The version of you tomorrow executes."*
 
-Mirai Nikki is a next-generation, AI-powered future diary and task manager. Instead of writing about what you did today, you write about what you *will* do tomorrow. 
+Mirai Nikki is a privacy-first, AI-assisted, mobile-first Progressive Web Application that helps you commit to tomorrow by writing tomorrow's achievements as though they have already happened.
 
-Powered by large language models (like Gemini and Claude via OpenRouter) and a robust background compilation engine, Mirai Nikki parses your free-form narrative and automatically compiles it into a structured execution plan (tasks). 
+Unlike traditional productivity applications that ask you to plan tomorrow using lists and reminders, Mirai Nikki asks you to narrate tomorrow in the past tense. The application then uses an invisible AI to transform your narrative into a structured execution plan.
 
-## Features ✨
+## Screenshots
 
-- **Future Journaling:** A distraction-free, beautifully themed editor (Warm Paper, Dark Ink) to write your intentions.
-- **AI Task Compiler:** An offline-first, background task queue that intelligently extracts action items from your narrative.
-- **Interactive Execution Plan:** Your compiled tasks map directly back to the sentences in your journal. Hover over a task to highlight the exact sentence that birthed it.
-- **Immediate Task View:** Check your "Tomorrow's Tasks" today, or "Today's Tasks" when the day arrives. Add custom tasks on the fly.
-- **Bring Your Own AI:** Plug in any OpenRouter API key and choose your preferred model to handle compilation.
-- **Privacy First:** All journals and tasks are stored locally in your browser using IndexedDB.
-- **PWA Ready:** Install Mirai Nikki to your home screen for a native app experience.
+*(Add screenshots of your application here)*
+
+<div align="center">
+  <img src="docs/screenshots/onboarding.png" alt="Onboarding" width="200"/>
+  <img src="docs/screenshots/write.png" alt="Write Screen" width="200"/>
+  <img src="docs/screenshots/tomorrow.png" alt="Tomorrow Screen" width="200"/>
+  <img src="docs/screenshots/archive.png" alt="Archive Screen" width="200"/>
+</div>
+
+## The Ritual ✨
+
+Mirai Nikki is not a task manager or a second brain. It is a daily commitment device designed around a strict ritual:
+
+1. **Write Tomorrow (Night):** Write the story of your success for the coming day as if it has already occurred.
+2. **Seal Tomorrow:** Once you seal the diary, it cannot be edited or viewed until the next morning.
+3. **Future Compiler (Invisible AI):** While you sleep, the app securely sends your journal to your chosen AI model to extract actionable tasks.
+4. **Open Tomorrow (Morning):** At your set unlock time (e.g. 4:00 AM), your future arrives. You first read your "future memory", followed by the checklist generated from that memory.
+5. **Execute:** Complete your tasks. Your completed days are saved beautifully in your Archive as chapters of a book.
+
+## Philosophy & Privacy 🛡️
+
+* **Local First:** Everything executes inside the browser. No backend, no accounts, no tracking.
+* **Privacy First:** Your data lives strictly in your device's IndexedDB. The only network request is securely sent directly to your chosen AI Provider.
+* **AI Second:** Artificial Intelligence is intentionally invisible. It exists solely to convert natural language into structured actions.
+
+## Tech Stack 🛠️
+
+- **Frontend:** React 19, TypeScript, Vite
+- **Styling:** Tailwind CSS v4, pure CSS animations (no heavy animation libraries)
+- **State Management:** Zustand
+- **Database:** Dexie.js (IndexedDB)
+- **AI Abstraction:** OpenRouter integration (pluggable architecture for future providers)
+- **PWA:** Fully installable as a native-feeling app via `vite-plugin-pwa`
 
 ## Getting Started 🚀
 
-1. Clone the repository
-2. Run `npm install`
-3. Run `npm run dev`
-4. Open your browser and go to `Settings` to input your OpenRouter API key.
-5. Start writing your future!
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/cacheparadox/MiraiNikki.git
+   cd MiraiNikki
+   ```
 
-## Technology Stack 🛠️
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- **Frontend:** React, TypeScript, Vite
-- **Styling:** Tailwind CSS, custom CSS variables for dynamic theming
-- **State Management:** Zustand
-- **Database:** Dexie.js (IndexedDB)
-- **Icons:** Lucide React
+3. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Connect AI**
+   Open the application and configure your OpenRouter API key during onboarding or in the Settings menu. The default model is `google/gemini-2.5-flash-pro`.
+
+## Contributing 🤝
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. Please ensure that all features align strictly with the "Daily Ritual" philosophy outlined in the PRD.
 
 ## License 📄
-MIT License
+[MIT](https://choosealicense.com/licenses/mit/)
