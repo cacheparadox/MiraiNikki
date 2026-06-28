@@ -1,15 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDraftStore } from '../../stores/draft.store';
 
+const INITIAL_TEMPLATE = 'From your future self,\n\nToday, ';
+
 export const JournalEditor: React.FC = () => {
   const { draftContent, saveDraft } = useDraftStore();
-  const [localContent, setLocalContent] = useState(draftContent);
+  const [localContent, setLocalContent] = useState(draftContent || INITIAL_TEMPLATE);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Update local content if draftContent is loaded asynchronously on mount
   useEffect(() => {
-    if (draftContent !== localContent && !localContent) {
+    if (draftContent !== localContent && draftContent) {
       setLocalContent(draftContent);
+    } else if (!draftContent && localContent !== INITIAL_TEMPLATE) {
+      // If draft was cleared, reset to template
+      setLocalContent(INITIAL_TEMPLATE);
     }
   }, [draftContent]);
 

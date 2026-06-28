@@ -12,15 +12,16 @@ export async function sealJournal() {
 
   if (!draftContent || draftContent.trim().length === 0) return;
 
-  // 1. Seal and save journal to DB
-  await saveJournalToDb(draftContent);
+  // 1. Seal and save journal to DB (with unlock time from settings)
+  const unlockTime = settings?.unlockTime || '04:00';
+  await saveJournalToDb(draftContent, unlockTime);
 
   // 2. Clear draft
   await clearDraft();
 
   // 3. Queue for compilation if AI is configured
   const newJournal = useJournalStore.getState().todayJournal;
-  if (newJournal && settings?.aiProvider && settings?.aiModel) {
+  if (newJournal && settings?.aiProvider && settings?.aiModel && settings?.aiApiKey) {
     await CompilerEngine.enqueue(newJournal.id, settings.aiProvider, settings.aiModel);
   }
 

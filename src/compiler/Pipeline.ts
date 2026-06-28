@@ -7,6 +7,7 @@ import { OpenRouterProvider } from '../providers/OpenRouterProvider';
 import { FUTURE_COMPILER_SYSTEM_PROMPT, COMPILER_PROMPT_VERSION } from '../prompts/futureCompiler';
 import { segmentText } from '../utils/segmenter';
 import { JournalStatus } from '../types';
+import type { SentenceMapping } from '../types';
 import { CompilerTelemetry } from '../telemetry/CompilerTelemetry';
 
 export class Pipeline {
@@ -34,11 +35,20 @@ export class Pipeline {
       const segments = segmentText(journal.content);
       const { promptText, map } = Normalizer.preparePrompt(segments);
 
+      // Step 1b: Store sentence map for frontend highlighting
+      const sentenceMap: SentenceMapping[] = segments.map((s, i) => ({
+        alias: `S${i + 1}`,
+        id: s.id,
+        text: s.text,
+      }));
+      await db.journals.update(journal.id, { sentenceMap });
+
       // Step 2: AI Provider execution
-      const provider = new OpenRouterProvider(); 
+      const provider = new OpenRouterProvider();
+      const systemPrompt = settings.systemPromptOverride || FUTURE_COMPILER_SYSTEM_PROMPT;
       await CompilerTelemetry.info('Pipeline', 'Sending prompt to AI Provider');
       const response = await provider.compileJournal(
-        FUTURE_COMPILER_SYSTEM_PROMPT,
+        systemPrompt,
         promptText,
         settings.aiApiKey,
         item.model,
@@ -47,7 +57,7 @@ export class Pipeline {
 
       // Step 3: Layered Validation
       const rawJson = await Validator.parseAndValidate(response.content);
-      
+
       // Step 4: Business Rules
       const ruledJson = await Rules.apply(rawJson);
 
@@ -57,7 +67,7 @@ export class Pipeline {
       // Step 6: Commit to Database
       await CompilerTelemetry.info('Pipeline', `Successfully compiled ${finalTasks.length} tasks`);
       await db.tasks.bulkPut(finalTasks);
-      
+
       await db.journals.update(journal.id, {
         status: JournalStatus.Ready,
         compilerStatus: 'Success',
@@ -72,10 +82,10 @@ export class Pipeline {
 
     } catch (e: any) {
       await CompilerTelemetry.error('Pipeline', `Compilation failed: ${e.message}`, { error: String(e) });
-      
+
       // Update journal status so UI knows it's broken
       await db.journals.update(item.journalId, { compilerStatus: `Error: ${e.message}` });
-      
+
       await Queue.markFailed(item.id, item.attempts + 1);
       return true;
     }

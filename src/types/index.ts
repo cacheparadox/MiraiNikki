@@ -22,22 +22,29 @@ export enum QueueStatus {
   Running = 'Running',
   Failed = 'Failed',
   WaitingRetry = 'WaitingRetry',
-  Removed = 'Removed', // Usually deleted instead, but good to have
+  Removed = 'Removed',
+}
+
+export interface SentenceMapping {
+  alias: string;  // S1, S2, etc.
+  id: string;     // UUID assigned during segmentation
+  text: string;   // The actual sentence text
 }
 
 export interface JournalEntry {
-  id: string; // crypto.randomUUID()
-  createdAt: string; // ISO string
-  unlockAt: string; // ISO string
+  id: string;
+  createdAt: string;
+  unlockAt: string;
   status: JournalStatus;
   content: string;
-  compilerStatus?: string; // string representation or error code
+  compilerStatus?: string;
   schemaVersion: number;
   compilerVersion: number;
   promptVersion: number;
   compiledAt?: string;
   provider?: string;
   model?: string;
+  sentenceMap?: SentenceMapping[];
 }
 
 export interface Task {
@@ -48,13 +55,13 @@ export interface Task {
   completedAt?: string;
   category: TaskCategory;
   estimatedMinutes: number;
-  sentenceId: string; // Maps to internal UUID from Normalizer
+  sentenceId: string;
 }
 
 export interface AppSettings {
   id: 'singleton';
   theme: 'Light' | 'Dark' | 'System';
-  unlockTime: string; // e.g., '04:00'
+  unlockTime: string;
   dailyReminderTime?: string;
   morningReminderTime?: string;
   enableNotifications: boolean;
@@ -90,4 +97,13 @@ export interface TelemetryLog {
   component: string;
   message: string;
   details?: Record<string, unknown>;
+}
+
+export interface ExportData {
+  version: string;
+  exportedAt: string;
+  journals: JournalEntry[];
+  tasks: Task[];
+  settings?: Omit<AppSettings, 'aiApiKey'>;
+  includesApiKey?: boolean;
 }

@@ -16,19 +16,18 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverSta
       className={clsx(
         'group flex items-start gap-4 p-4 rounded-xl border transition-all duration-300',
         task.completed 
-          ? 'bg-[var(--color-surface)] border-transparent opacity-60' 
+          ? 'bg-[var(--color-surface)] border-transparent opacity-60 hover:opacity-80' 
           : 'bg-[var(--color-surface)] border-[var(--color-divider)] hover:border-[var(--color-gold)] shadow-sm'
       )}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
     >
       <button
-        onClick={() => !task.completed && onComplete(task.id)}
-        disabled={task.completed}
+        onClick={() => onComplete(task.id)}
         className={clsx(
           'flex-shrink-0 mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200',
           task.completed
-            ? 'bg-[var(--color-success)] border-[var(--color-success)] text-[var(--color-bg)]'
+            ? 'bg-[var(--color-success)] border-[var(--color-success)] text-[var(--color-bg)] animate-check-fill'
             : 'border-[var(--color-muted)] hover:border-[var(--color-success)]'
         )}
       >
