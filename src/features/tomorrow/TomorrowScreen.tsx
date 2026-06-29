@@ -10,7 +10,7 @@ import { useUnlockCountdown } from '../../hooks/useUnlockCountdown';
 import { Loader2 } from 'lucide-react';
 
 export const TomorrowScreen: React.FC = () => {
-  const { todayJournal, tasks, loadTodayJournal, completeTask, uncompleteTask, addTask, openJournal } = useJournalStore();
+  const { todayJournal, tasks, loadTodayJournal, completeTask, uncompleteTask, addTask, openJournal, reorderTask } = useJournalStore();
   const { queueItems, loadQueue, cancelCompilation, recompileJournal } = useCompilerStore();
   const { setScreen } = useUIStore();
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
@@ -151,6 +151,7 @@ export const TomorrowScreen: React.FC = () => {
           onHoverStart={setHighlightedId}
           onHoverEnd={() => setHighlightedId(null)}
           onAddTask={(title) => addTask(todayJournal.id, title)}
+          onReorder={reorderTask}
         />
       </div>
     </div>

@@ -42,6 +42,7 @@ export class Normalizer {
         category: (rawTask.category as TaskCategory) || TaskCategory.Other,
         estimatedMinutes: rawTask.estimatedMinutes || 15,
         sentenceId: sentenceUuid,
+        order: finalTasks.length,
       });
     }
 

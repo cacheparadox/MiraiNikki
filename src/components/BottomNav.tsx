@@ -1,14 +1,14 @@
 import React from 'react';
 import { useUIStore, type AppScreen } from '../stores/ui.store';
-import { BookOpen, PenTool, Archive, Settings } from 'lucide-react';
+import { PenTool, Archive, Settings, CheckSquare } from 'lucide-react';
 import clsx from 'clsx';
 
 export const BottomNav: React.FC = () => {
   const { currentScreen, setScreen } = useUIStore();
 
   const navItems: { id: AppScreen; label: string; icon: React.ReactNode }[] = [
-    { id: 'tomorrow', label: 'Tomorrow', icon: <BookOpen size={20} /> },
     { id: 'write', label: 'Write', icon: <PenTool size={20} /> },
+    { id: 'tomorrow', label: 'Tasks', icon: <CheckSquare size={20} /> },
     { id: 'archive', label: 'Archive', icon: <Archive size={20} /> },
     { id: 'settings', label: 'Settings', icon: <Settings size={20} /> },
   ];

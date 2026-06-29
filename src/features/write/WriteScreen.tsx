@@ -12,7 +12,7 @@ export const WriteScreen: React.FC = () => {
   const [isAnimatingSeal, setIsAnimatingSeal] = useState(false);
   
   const { draftContent, loadDraft, clearDraft } = useDraftStore();
-  const { loadTodayJournal, todayJournal } = useJournalStore();
+  const { nextJournal, loadTodayJournal } = useJournalStore();
 
   useEffect(() => {
     const init = async () => {
@@ -47,9 +47,11 @@ export const WriteScreen: React.FC = () => {
     setIsRecoveryModalOpen(false);
   };
 
-  const today = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowFormatted = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(tomorrowDate);
 
-  if (todayJournal) {
+  if (nextJournal) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-6 text-center animate-fade-in">
         <h2 className="text-2xl font-bold mb-2">Tomorrow is already written.</h2>
@@ -76,8 +78,8 @@ export const WriteScreen: React.FC = () => {
 
       <header className={clsx("flex justify-between items-end mb-2 px-2 transition-opacity duration-500", isAnimatingSeal && "opacity-0")}>
         <div>
-          <p className="text-sm text-[var(--color-muted)] uppercase tracking-wider font-semibold">Write Tomorrow</p>
-          <h1 className="text-2xl font-bold text-[var(--color-gold)]">{today}</h1>
+          <p className="text-sm text-[var(--color-muted)] uppercase tracking-wider font-semibold">Tomorrow's Journey</p>
+          <h1 className="text-2xl font-bold text-[var(--color-gold)]">{tomorrowFormatted}</h1>
         </div>
       </header>
 

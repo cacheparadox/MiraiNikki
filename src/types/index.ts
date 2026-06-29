@@ -56,6 +56,7 @@ export interface Task {
   category: TaskCategory;
   estimatedMinutes: number;
   sentenceId: string;
+  order?: number;
 }
 
 export interface AppSettings {

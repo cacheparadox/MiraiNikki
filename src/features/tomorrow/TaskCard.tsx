@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Task } from '../../types';
-import { Check, Clock, Tag } from 'lucide-react';
+import { Check, Clock, Tag, ChevronUp, ChevronDown } from 'lucide-react';
 import clsx from 'clsx';
 
 interface TaskCardProps {
@@ -8,9 +8,11 @@ interface TaskCardProps {
   onComplete: (id: string) => void;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
+  onMoveUp?: (() => void) | undefined;
+  onMoveDown?: (() => void) | undefined;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverStart, onHoverEnd }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverStart, onHoverEnd, onMoveUp, onMoveDown }) => {
   return (
     <div
       className={clsx(
@@ -55,6 +57,25 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverSta
           )}
         </div>
       </div>
+      
+      {(!task.completed && (onMoveUp || onMoveDown)) && (
+        <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+          <button 
+            onClick={onMoveUp} 
+            disabled={!onMoveUp}
+            className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] disabled:opacity-30 transition-colors"
+          >
+            <ChevronUp size={16} />
+          </button>
+          <button 
+            onClick={onMoveDown} 
+            disabled={!onMoveDown}
+            className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] disabled:opacity-30 transition-colors"
+          >
+            <ChevronDown size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

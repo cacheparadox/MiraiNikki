@@ -4,6 +4,7 @@ import { db } from '../db/database';
 
 interface JournalState {
   todayJournal: JournalEntry | null;
+  nextJournal: JournalEntry | null;
   tasks: Task[];
   loadTodayJournal: () => Promise<void>;
   sealJournal: (content: string, unlockTime: string) => Promise<void>;
@@ -12,21 +13,31 @@ interface JournalState {
   uncompleteTask: (taskId: string) => Promise<void>;
   addTask: (journalId: string, title: string, category?: TaskCategory) => Promise<void>;
   storeSentenceMap: (journalId: string, map: SentenceMapping[]) => Promise<void>;
+  reorderTask: (taskId: string, newIndex: number) => Promise<void>;
 }
 
 export const useJournalStore = create<JournalState>((set, get) => ({
   todayJournal: null,
+  nextJournal: null,
   tasks: [],
 
   loadTodayJournal: async () => {
     const journals = await db.journals.orderBy('createdAt').reverse().toArray();
-    const active = journals.find(j => j.status !== JournalStatus.Archived);
+    const now = new Date();
+    
+    // todayJournal is the most recent unarchived journal that has UNLOCKED
+    const today = journals.find(j => j.status !== JournalStatus.Archived && new Date(j.unlockAt) <= now);
+    
+    // nextJournal is the most recent journal that is STILL LOCKED
+    const next = journals.find(j => j.status !== JournalStatus.Archived && new Date(j.unlockAt) > now);
 
-    if (active) {
-      const tasks = await db.tasks.where('journalId').equals(active.id).toArray();
-      set({ todayJournal: active, tasks });
+    if (today) {
+      const tasks = await db.tasks.where('journalId').equals(today.id).toArray();
+      // sort by order if it exists
+      tasks.sort((a, b) => (a.order || 0) - (b.order || 0));
+      set({ todayJournal: today, nextJournal: next || null, tasks });
     } else {
-      set({ todayJournal: null, tasks: [] });
+      set({ todayJournal: null, nextJournal: next || null, tasks: [] });
     }
   },
 
@@ -52,7 +63,7 @@ export const useJournalStore = create<JournalState>((set, get) => ({
     };
 
     await db.journals.put(newJournal);
-    set({ todayJournal: newJournal, tasks: [] });
+    set({ nextJournal: newJournal });
   },
 
   openJournal: async () => {
@@ -101,6 +112,7 @@ export const useJournalStore = create<JournalState>((set, get) => ({
   },
 
   addTask: async (journalId: string, title: string, category: TaskCategory = TaskCategory.Other) => {
+    const { todayJournal, tasks } = get();
     const newTask: Task = {
       id: crypto.randomUUID(),
       journalId,
@@ -109,11 +121,11 @@ export const useJournalStore = create<JournalState>((set, get) => ({
       estimatedMinutes: 0,
       completed: false,
       sentenceId: 'custom',
+      order: tasks.length,
     };
 
     await db.tasks.put(newTask);
 
-    const { todayJournal, tasks } = get();
     if (todayJournal && todayJournal.id === journalId) {
       set({ tasks: [...tasks, newTask] });
     }
@@ -121,9 +133,30 @@ export const useJournalStore = create<JournalState>((set, get) => ({
 
   storeSentenceMap: async (journalId: string, map: SentenceMapping[]) => {
     await db.journals.update(journalId, { sentenceMap: map });
-    const { todayJournal } = get();
+    const { todayJournal, nextJournal } = get();
     if (todayJournal && todayJournal.id === journalId) {
       set({ todayJournal: { ...todayJournal, sentenceMap: map } });
+    } else if (nextJournal && nextJournal.id === journalId) {
+      set({ nextJournal: { ...nextJournal, sentenceMap: map } });
     }
   },
+  
+  reorderTask: async (taskId: string, newIndex: number) => {
+    const { tasks } = get();
+    const oldIndex = tasks.findIndex(t => t.id === taskId);
+    if (oldIndex === -1) return;
+
+    const newTasks = [...tasks];
+    const [movedTask] = newTasks.splice(oldIndex, 1);
+    if (!movedTask) return;
+    newTasks.splice(newIndex, 0, movedTask);
+
+    // Update order values
+    const updatedTasks = newTasks.map((t, index) => ({ ...t, order: index }));
+    
+    // Save to DB in bulk
+    await Promise.all(updatedTasks.map(t => db.tasks.put(t)));
+    
+    set({ tasks: updatedTasks });
+  }
 }));

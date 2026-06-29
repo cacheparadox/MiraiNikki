@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useUIStore } from '../stores/ui.store';
 import { useSettingsStore } from '../stores/settings.store';
 import { useJournalStore } from '../stores/journal.store';
@@ -36,21 +36,23 @@ export const App: React.FC = () => {
     init();
   }, []);
 
+  const hasRoutedInitially = useRef(false);
+
   // Intelligent Routing on startup
   useEffect(() => {
     if (isInitializing || !settings) return;
-
-    if (!settings.onboardingCompleted) {
-      // Handled by conditional rendering below
-      return;
-    }
+    if (!settings.onboardingCompleted) return;
+    
+    // Only route automatically on the very first evaluation
+    if (hasRoutedInitially.current) return;
+    hasRoutedInitially.current = true;
 
     // Determine initial route based on PRD §5 logic
     const hasActiveJournal = !!todayJournal;
     
     // Check if there's a journal that hasn't reached its unlock time yet
     // Or if there is NO journal, we should route to write.
-    // If it HAS unlocked, we should route to Tomorrow.
+    // If it HAS unlocked, we should route to Tomorrow (Tasks).
     if (!hasActiveJournal) {
       if (currentScreen !== 'write' && currentScreen !== 'settings' && currentScreen !== 'archive') {
         setScreen('write');
@@ -60,7 +62,7 @@ export const App: React.FC = () => {
         setScreen('tomorrow');
       }
     }
-  }, [isInitializing, settings, todayJournal]);
+  }, [isInitializing, settings, todayJournal, currentScreen, setScreen]);
 
   if (isInitializing || !settings) {
     return <div className="h-screen w-full bg-[var(--color-bg)]" />;
