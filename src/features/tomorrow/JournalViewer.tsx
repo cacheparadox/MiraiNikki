@@ -6,9 +6,11 @@ interface JournalViewerProps {
   content: string;
   sentenceMap?: SentenceMapping[] | undefined;
   highlightedSentenceId: string | null;
+  selectedSentenceId?: string | null;
+  onSentenceClick?: (id: string) => void;
 }
 
-export const JournalViewer: React.FC<JournalViewerProps> = ({ content, sentenceMap, highlightedSentenceId }) => {
+export const JournalViewer: React.FC<JournalViewerProps> = ({ content, sentenceMap, highlightedSentenceId, selectedSentenceId, onSentenceClick }) => {
   // If we have a sentence map, we can highlight individual sentences
   // If not (legacy entries), we just render the raw text
 
@@ -34,11 +36,13 @@ export const JournalViewer: React.FC<JournalViewerProps> = ({ content, sentenceM
         {sentenceMap.map((sentence) => (
           <span
             key={sentence.id}
+            onClick={() => onSentenceClick && onSentenceClick(sentence.id)}
             className={clsx(
               'transition-all duration-300 rounded px-0.5',
-              highlightedSentenceId === sentence.id 
+              (highlightedSentenceId === sentence.id || selectedSentenceId === sentence.id) 
                 ? 'bg-[var(--color-gold)]/40 shadow-[0_0_8px_rgba(214,177,94,0.4)]'
-                : 'bg-transparent'
+                : 'bg-transparent',
+              onSentenceClick && 'cursor-pointer hover:bg-[var(--color-gold)]/20'
             )}
           >
             {sentence.text + ' '}

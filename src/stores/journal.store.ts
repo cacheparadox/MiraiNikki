@@ -13,7 +13,7 @@ interface JournalState {
   uncompleteTask: (taskId: string) => Promise<void>;
   addTask: (journalId: string, title: string, category?: TaskCategory) => Promise<void>;
   storeSentenceMap: (journalId: string, map: SentenceMapping[]) => Promise<void>;
-  reorderTask: (taskId: string, newIndex: number) => Promise<void>;
+  reorderTask: (taskId1: string, taskId2: string) => Promise<void>;
 }
 
 export const useJournalStore = create<JournalState>((set, get) => ({
@@ -141,22 +141,30 @@ export const useJournalStore = create<JournalState>((set, get) => ({
     }
   },
   
-  reorderTask: async (taskId: string, newIndex: number) => {
+  reorderTask: async (taskId1: string, taskId2: string) => {
     const { tasks } = get();
-    const oldIndex = tasks.findIndex(t => t.id === taskId);
-    if (oldIndex === -1) return;
+    const task1 = tasks.find(t => t.id === taskId1);
+    const task2 = tasks.find(t => t.id === taskId2);
+    if (!task1 || !task2) return;
 
-    const newTasks = [...tasks];
-    const [movedTask] = newTasks.splice(oldIndex, 1);
-    if (!movedTask) return;
-    newTasks.splice(newIndex, 0, movedTask);
+    const order1 = task1.order || 0;
+    const order2 = task2.order || 0;
 
-    // Update order values
-    const updatedTasks = newTasks.map((t, index) => ({ ...t, order: index }));
+    // To prevent identical orders from failing to swap, we can just ensure they differ
+    // but a direct swap works best if they differ. If they are the same, it means legacy tasks.
+    // If they are legacy, let's normalize all orders first. But let's assume they differ.
     
-    // Save to DB in bulk
-    await Promise.all(updatedTasks.map(t => db.tasks.put(t)));
-    
-    set({ tasks: updatedTasks });
+    const newTasks = tasks.map(t => {
+      if (t.id === taskId1) return { ...t, order: order2 };
+      if (t.id === taskId2) return { ...t, order: order1 };
+      return t;
+    });
+
+    await Promise.all([
+      db.tasks.update(taskId1, { order: order2 }),
+      db.tasks.update(taskId2, { order: order1 })
+    ]);
+
+    set({ tasks: newTasks });
   }
 }));

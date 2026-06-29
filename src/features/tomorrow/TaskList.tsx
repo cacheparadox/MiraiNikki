@@ -9,7 +9,7 @@ interface TaskListProps {
   onHoverStart: (sentenceId: string) => void;
   onHoverEnd: () => void;
   onAddTask?: (title: string) => void;
-  onReorder?: (taskId: string, newIndex: number) => void;
+  onReorder?: (taskId1: string, taskId2: string) => void;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onHoverStart, onHoverEnd, onAddTask, onReorder }) => {
@@ -30,8 +30,12 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onHoverSt
     );
   }
 
-  // Sort by user-defined order
-  const sortedTasks = [...tasks].sort((a, b) => (a.order || 0) - (b.order || 0));
+  // Sort by user-defined order, but push completed tasks to the bottom
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (a.completed && !b.completed) return 1;
+    if (!a.completed && b.completed) return -1;
+    return (a.order || 0) - (b.order || 0);
+  });
 
   return (
     <div className="flex flex-col gap-3">
@@ -42,8 +46,8 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onHoverSt
           onComplete={onComplete}
           onHoverStart={() => onHoverStart(task.sentenceId)}
           onHoverEnd={onHoverEnd}
-          onMoveUp={index > 0 && onReorder && !task.completed ? () => onReorder(task.id, index - 1) : undefined}
-          onMoveDown={index < sortedTasks.length - 1 && onReorder && !task.completed ? () => onReorder(task.id, index + 1) : undefined}
+          onMoveUp={index > 0 && onReorder && !task.completed ? () => onReorder(task.id, sortedTasks[index - 1]!.id) : undefined}
+          onMoveDown={index < sortedTasks.length - 1 && onReorder && !task.completed ? () => onReorder(task.id, sortedTasks[index + 1]!.id) : undefined}
         />
       ))}
       

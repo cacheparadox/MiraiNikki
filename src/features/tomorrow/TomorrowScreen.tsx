@@ -14,6 +14,7 @@ export const TomorrowScreen: React.FC = () => {
   const { queueItems, loadQueue, cancelCompilation, recompileJournal } = useCompilerStore();
   const { setScreen } = useUIStore();
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [selectedSentenceId, setSelectedSentenceId] = useState<string | null>(null);
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false);
 
   useEffect(() => {
@@ -95,6 +96,10 @@ export const TomorrowScreen: React.FC = () => {
   const isCompiling = !!currentQueueItem && currentQueueItem.status !== 'Failed' && currentQueueItem.status !== 'Removed';
   const isError = todayJournal.compilerStatus?.startsWith('Error') || currentQueueItem?.status === 'Failed';
   
+  const filteredTasks = selectedSentenceId 
+    ? tasks.filter(t => t.sentenceId === selectedSentenceId || t.sentenceId === 'custom')
+    : tasks;
+
   return (
     <div className="flex flex-col h-full p-4 gap-6 max-w-2xl mx-auto w-full animate-fade-in">
       <header className="px-2 mt-4">
@@ -108,6 +113,8 @@ export const TomorrowScreen: React.FC = () => {
         content={todayJournal.content}
         sentenceMap={todayJournal.sentenceMap}
         highlightedSentenceId={highlightedId}
+        selectedSentenceId={selectedSentenceId}
+        onSentenceClick={(id) => setSelectedSentenceId(prev => prev === id ? null : id)}
       />
 
       <div className="mt-4">
@@ -142,7 +149,7 @@ export const TomorrowScreen: React.FC = () => {
         )}
 
         <TaskList 
-          tasks={tasks}
+          tasks={filteredTasks}
           onComplete={(id) => {
             const task = tasks.find(t => t.id === id);
             if (task?.completed) uncompleteTask(id);
