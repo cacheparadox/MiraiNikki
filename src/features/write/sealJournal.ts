@@ -20,7 +20,7 @@ export async function sealJournal() {
   await clearDraft();
 
   // 3. Queue for compilation if AI is configured
-  const newJournal = useJournalStore.getState().todayJournal;
+  const newJournal = useJournalStore.getState().nextJournal;
   if (newJournal && settings?.aiProvider && settings?.aiModel && settings?.aiApiKey) {
     await CompilerEngine.enqueue(newJournal.id, settings.aiProvider, settings.aiModel);
   }

@@ -66,6 +66,13 @@ export class Pipeline {
 
       // Step 6: Commit to Database
       await CompilerTelemetry.info('Pipeline', `Successfully compiled ${finalTasks.length} tasks`);
+      
+      const existingTasks = await db.tasks.where('journalId').equals(journal.id).toArray();
+      const generatedTaskIds = existingTasks.filter(t => t.sentenceId !== 'custom').map(t => t.id);
+      if (generatedTaskIds.length > 0) {
+        await db.tasks.bulkDelete(generatedTaskIds);
+      }
+
       await db.tasks.bulkPut(finalTasks);
 
       await db.journals.update(journal.id, {
