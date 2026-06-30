@@ -18,7 +18,11 @@ export class Validator {
     
     let parsed: any;
     try {
-      parsed = JSON.parse(jsonString);
+      let sanitized = jsonString.trim();
+      if (sanitized.startsWith('```')) {
+        sanitized = sanitized.replace(/^```[a-zA-Z]*\n?/, '').replace(/\n?```$/, '').trim();
+      }
+      parsed = JSON.parse(sanitized);
     } catch (e) {
       await CompilerTelemetry.error('Validator', 'Invalid JSON from AI', { error: String(e) });
       throw new Error('Failed to parse AI response as JSON');

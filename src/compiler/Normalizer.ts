@@ -28,10 +28,10 @@ export class Normalizer {
     const finalTasks: Task[] = [];
 
     for (const rawTask of raw.tasks) {
-      const sentenceUuid = aliasToUuidMap[rawTask.sentenceId];
+      let sentenceUuid = aliasToUuidMap[rawTask.sentenceId];
       if (!sentenceUuid) {
-        await CompilerTelemetry.warn('Normalizer', `AI returned invalid alias: ${rawTask.sentenceId}`);
-        continue;
+        await CompilerTelemetry.warn('Normalizer', `AI returned invalid alias: ${rawTask.sentenceId}. Falling back to 'custom'.`);
+        sentenceUuid = 'custom';
       }
 
       finalTasks.push({

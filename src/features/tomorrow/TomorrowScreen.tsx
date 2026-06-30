@@ -118,7 +118,17 @@ export const TomorrowScreen: React.FC = () => {
       />
 
       <div className="mt-4">
-        <h3 className="text-xl font-bold mb-4 px-2">Execution Plan</h3>
+        <div className="flex justify-between items-center mb-4 px-2">
+          <h3 className="text-xl font-bold">Execution Plan</h3>
+          {!isCompiling && (
+            <button 
+              onClick={() => recompileJournal(todayJournal.id)}
+              className="text-sm font-semibold text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors"
+            >
+              Recompile
+            </button>
+          )}
+        </div>
         
         {isCompiling && (
           <div className="flex flex-col items-center justify-center py-12 text-[var(--color-muted)] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl">
