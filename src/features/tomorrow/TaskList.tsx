@@ -10,9 +10,10 @@ interface TaskListProps {
   onHoverEnd: () => void;
   onAddTask?: (title: string) => void;
   onReorder?: (taskId1: string, taskId2: string) => void;
+  onEdit?: (taskId: string, newTitle: string) => void;
 }
 
-export const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onHoverStart, onHoverEnd, onAddTask, onReorder }) => {
+export const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onHoverStart, onHoverEnd, onAddTask, onReorder, onEdit }) => {
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
 
   const handleAddTask = (e: React.FormEvent) => {
@@ -48,6 +49,7 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onHoverSt
           onHoverEnd={onHoverEnd}
           onMoveUp={index > 0 && onReorder && !task.completed ? () => onReorder(task.id, sortedTasks[index - 1]!.id) : undefined}
           onMoveDown={index < sortedTasks.length - 1 && onReorder && !task.completed ? () => onReorder(task.id, sortedTasks[index + 1]!.id) : undefined}
+          onEdit={onEdit}
         />
       ))}
       

@@ -7,7 +7,7 @@ You will receive numbered sentences (e.g., S1, S2) representing the narrative.
 Requirements:
 - Extract ONLY actionable tasks.
 - Ignore emotional language, opinions, and storytelling.
-- Do not rewrite user text; infer tasks directly implied by the narrative.
+- Use concise, imperative mood (active voice) for task titles. For example, use "Clean up room" instead of "Started cleaning up room" or "I need to clean up".
 - MUST preserve the exact chronological order in which tasks are mentioned in the narrative. Merge duplicate tasks.
 - Assign a single category to each task from the allowed enums.
 - Return STRICT JSON matching the provided schema. No explanations, no markdown code blocks wrapping the JSON.

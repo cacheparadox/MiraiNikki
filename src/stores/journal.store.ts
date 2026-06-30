@@ -12,8 +12,10 @@ interface JournalState {
   completeTask: (taskId: string) => Promise<void>;
   uncompleteTask: (taskId: string) => Promise<void>;
   addTask: (journalId: string, title: string, category?: TaskCategory) => Promise<void>;
+  editTask: (taskId: string, title: string) => Promise<void>;
   storeSentenceMap: (journalId: string, map: SentenceMapping[]) => Promise<void>;
   reorderTask: (taskId1: string, taskId2: string) => Promise<void>;
+  clearCompilerError: (journalId: string) => Promise<void>;
 }
 
 export const useJournalStore = create<JournalState>((set, get) => ({
@@ -131,6 +133,21 @@ export const useJournalStore = create<JournalState>((set, get) => ({
     }
   },
 
+  editTask: async (taskId: string, title: string) => {
+    const { tasks } = get();
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    if (taskIndex === -1) return;
+
+    await db.tasks.update(taskId, { title });
+    
+    const newTasks = [...tasks];
+    const oldTask = tasks[taskIndex];
+    if (oldTask) {
+      newTasks[taskIndex] = { ...oldTask, title };
+      set({ tasks: newTasks });
+    }
+  },
+
   storeSentenceMap: async (journalId: string, map: SentenceMapping[]) => {
     await db.journals.update(journalId, { sentenceMap: map });
     const { todayJournal, nextJournal } = get();
@@ -166,5 +183,13 @@ export const useJournalStore = create<JournalState>((set, get) => ({
     ]);
 
     set({ tasks: newTasks });
+  },
+
+  clearCompilerError: async (journalId: string) => {
+    await db.journals.update(journalId, { compilerStatus: '' });
+    const { todayJournal } = get();
+    if (todayJournal?.id === journalId) {
+      set({ todayJournal: { ...todayJournal, compilerStatus: '' } });
+    }
   }
 }));

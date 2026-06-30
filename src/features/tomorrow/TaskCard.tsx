@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Task } from '../../types';
-import { Check, Clock, Tag, ChevronUp, ChevronDown } from 'lucide-react';
+import { Check, Clock, Tag, ChevronUp, ChevronDown, Pencil } from 'lucide-react';
 import clsx from 'clsx';
 
 interface TaskCardProps {
@@ -10,9 +10,37 @@ interface TaskCardProps {
   onHoverEnd?: () => void;
   onMoveUp?: (() => void) | undefined;
   onMoveDown?: (() => void) | undefined;
+  onEdit?: ((id: string, newTitle: string) => void) | undefined;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverStart, onHoverEnd, onMoveUp, onMoveDown }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverStart, onHoverEnd, onMoveUp, onMoveDown, onEdit }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(task.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleEditSubmit = () => {
+    if (editTitle.trim() && editTitle.trim() !== task.title && onEdit) {
+      onEdit(task.id, editTitle.trim());
+    } else {
+      setEditTitle(task.title);
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleEditSubmit();
+    if (e.key === 'Escape') {
+      setEditTitle(task.title);
+      setIsEditing(false);
+    }
+  };
+
   return (
     <div
       className={clsx(
@@ -37,12 +65,23 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverSta
       </button>
 
       <div className="flex-1 min-w-0">
-        <h4 className={clsx(
-          'text-base font-medium mb-1.5 transition-all duration-300',
-          task.completed ? 'line-through text-[var(--color-muted)]' : 'text-[var(--color-text-primary)]'
-        )}>
-          {task.title}
-        </h4>
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            onBlur={handleEditSubmit}
+            onKeyDown={handleKeyDown}
+            className="w-full bg-[var(--color-bg)] border border-[var(--color-gold)] text-[var(--color-text-primary)] rounded px-2 py-1 mb-1 outline-none font-medium"
+          />
+        ) : (
+          <h4 className={clsx(
+            'text-base font-medium mb-1.5 transition-all duration-300',
+            task.completed ? 'line-through text-[var(--color-muted)]' : 'text-[var(--color-text-primary)]'
+          )}>
+            {task.title}
+          </h4>
+        )}
         
         <div className="flex items-center gap-3 text-xs font-medium text-[var(--color-muted)]">
           <span className="flex items-center gap-1">
@@ -58,22 +97,32 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete, onHoverSta
         </div>
       </div>
       
-      {(!task.completed && (onMoveUp || onMoveDown)) && (
-        <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-          <button 
-            onClick={onMoveUp} 
-            disabled={!onMoveUp}
-            className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] disabled:opacity-30 transition-colors"
-          >
-            <ChevronUp size={16} />
-          </button>
-          <button 
-            onClick={onMoveDown} 
-            disabled={!onMoveDown}
-            className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] disabled:opacity-30 transition-colors"
-          >
-            <ChevronDown size={16} />
-          </button>
+      {(!task.completed && (onMoveUp || onMoveDown || onEdit)) && (
+        <div className="flex flex-col items-center gap-1 opacity-30 hover:opacity-100 focus-within:opacity-100 transition-opacity ml-2">
+          {onMoveUp && (
+            <button 
+              onClick={onMoveUp} 
+              className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors"
+            >
+              <ChevronUp size={16} />
+            </button>
+          )}
+          {onEdit && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors"
+            >
+              <Pencil size={12} />
+            </button>
+          )}
+          {onMoveDown && (
+            <button 
+              onClick={onMoveDown} 
+              className="p-1 text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors"
+            >
+              <ChevronDown size={16} />
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -7,10 +7,10 @@ import { TaskList } from './TaskList';
 import { DiaryCard } from '../../components/DiaryCard';
 import { JournalStatus } from '../../types';
 import { useUnlockCountdown } from '../../hooks/useUnlockCountdown';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 
 export const TomorrowScreen: React.FC = () => {
-  const { todayJournal, tasks, loadTodayJournal, completeTask, uncompleteTask, addTask, openJournal, reorderTask } = useJournalStore();
+  const { todayJournal, tasks, loadTodayJournal, completeTask, uncompleteTask, addTask, openJournal, reorderTask, editTask, clearCompilerError } = useJournalStore();
   const { queueItems, loadQueue, cancelCompilation, recompileJournal } = useCompilerStore();
   const { setScreen } = useUIStore();
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
@@ -146,8 +146,14 @@ export const TomorrowScreen: React.FC = () => {
         )}
         
         {isError && !isCompiling && (
-          <div className="p-4 bg-[var(--color-danger)]/10 text-[var(--color-danger)] rounded-xl border border-[var(--color-danger)]/20 mb-4">
-            <h4 className="font-bold mb-1">Compilation Failed</h4>
+          <div className="p-4 bg-[var(--color-danger)]/10 text-[var(--color-danger)] rounded-xl border border-[var(--color-danger)]/20 mb-4 relative">
+            <button 
+              onClick={() => clearCompilerError(todayJournal.id)}
+              className="absolute top-2 right-2 p-2 hover:bg-[var(--color-danger)]/10 rounded-full transition-colors"
+            >
+              <X size={16} />
+            </button>
+            <h4 className="font-bold mb-1 pr-6">Compilation Failed</h4>
             <p className="text-sm">{todayJournal.compilerStatus || 'Unknown error occurred.'}</p>
             <button 
               onClick={() => recompileJournal(todayJournal.id)}
@@ -169,6 +175,7 @@ export const TomorrowScreen: React.FC = () => {
           onHoverEnd={() => setHighlightedId(null)}
           onAddTask={(title) => addTask(todayJournal.id, title)}
           onReorder={reorderTask}
+          onEdit={editTask}
         />
       </div>
     </div>
