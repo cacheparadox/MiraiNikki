@@ -19,9 +19,19 @@ export class Validator {
     let parsed: any;
     try {
       let sanitized = jsonString.trim();
+      
+      // If the model wrapped it in markdown code blocks, strip them
       if (sanitized.startsWith('```')) {
         sanitized = sanitized.replace(/^```[a-zA-Z]*\n?/, '').replace(/\n?```$/, '').trim();
       }
+
+      // Find the first { and the last }
+      const startIdx = sanitized.indexOf('{');
+      const endIdx = sanitized.lastIndexOf('}');
+      if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
+        sanitized = sanitized.substring(startIdx, endIdx + 1);
+      }
+
       parsed = JSON.parse(sanitized);
     } catch (e) {
       await CompilerTelemetry.error('Validator', 'Invalid JSON from AI', { error: String(e) });
